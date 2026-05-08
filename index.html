@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="sr">
 <head>
@@ -150,7 +149,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-heig
   </div>
 </div>
 
-<div class="admin-panel" id="adminPanel" onclick="if(event.target===this)closeAdmin()">
+<div class="admin-panel" id="adminPanel" >
   <div id="adminInner">
     <div class="login-box" id="loginBox">
       <h3>🔐 Admin pristup</h3>
@@ -194,7 +193,7 @@ async function loadParts() {
   const res = await fetch(API_BASE + "/latest", { headers: { "X-Master-Key": API_KEY } });
   const json = await res.json();
   const rec = json.record;
-  return Array.isArray(rec) ? rec : (Array.isArray(rec.parts) ? rec.parts : []);
+  return Array.isArray(rec) ? rec.filter(p => !p.init) : [];
 }
 
 async function saveParts(parts) {
