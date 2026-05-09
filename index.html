@@ -1108,11 +1108,6 @@ function doSearch() {
     return;
   }
 
-  if (results.length === 1) {
-    showDetail(results[0]);
-    return;
-  }
-
   showGrid(results, area ? `Area: ${area.replace(/_/g, ' ')}` : `Rezultati pretrage`);
 }
 
