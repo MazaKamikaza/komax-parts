@@ -4,379 +4,1340 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Komax BT752-722 — Pretraga delova</title>
+<title>Komax BT752-722 — Parts</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; min-height: 100vh; }
+  @import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap');
 
-.header { background: #003057; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-.header-top { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; }
-.logo { display: flex; align-items: baseline; }
-.logo-k { font-size: 30px; font-weight: 900; color: #e4002b; line-height: 1; }
-.logo-rest { font-size: 24px; font-weight: 700; color: #fff; letter-spacing: 2px; line-height: 1; }
-.machine-tag { background: rgba(228,0,43,0.18); border: 1px solid rgba(228,0,43,0.45); color: #ff7090; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px; letter-spacing: 0.5px; margin-left: 14px; }
-.header-right { display: flex; align-items: center; gap: 14px; }
-.header-subtitle { color: rgba(255,255,255,0.55); font-size: 12px; }
-.admin-btn { background: transparent; border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.7); font-size: 12px; padding: 5px 14px; border-radius: 5px; cursor: pointer; transition: all 0.2s; }
-.admin-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  :root {
+    --komax-blue: #003057;
+    --komax-red: #e4002b;
+    --komax-blue-mid: #004f8b;
+    --komax-blue-light: #e8f0f8;
+    --komax-gray: #f4f5f7;
+    --komax-gray-mid: #d0d5dd;
+    --komax-gray-dark: #6b7280;
+    --komax-text: #1a2333;
+    --white: #ffffff;
+    --shadow-sm: 0 1px 3px rgba(0,48,87,0.08);
+    --shadow-md: 0 4px 16px rgba(0,48,87,0.12);
+    --shadow-lg: 0 8px 32px rgba(0,48,87,0.16);
+    --radius: 6px;
+    --radius-lg: 10px;
+  }
 
-.search-section { background: rgba(0,0,0,0.2); border-top: 1px solid rgba(255,255,255,0.07); padding: 14px 28px; display: flex; gap: 10px; align-items: center; }
-.input-wrap { flex: 1; position: relative; }
-.input-wrap input { width: 100%; border: none; border-radius: 6px; padding: 10px 14px 10px 40px; font-size: 14px; color: #1a1a2e; background: #fff; outline: none; }
-.input-wrap input::placeholder { color: #aaa; }
-.input-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999; font-size: 16px; }
-.area-select { background: #fff; border: none; border-radius: 6px; padding: 10px 14px; font-size: 13px; color: #1a1a2e; outline: none; cursor: pointer; min-width: 180px; }
-.search-btn { background: #e4002b; color: #fff; border: none; border-radius: 6px; padding: 10px 22px; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
-.search-btn:hover { background: #c0001f; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-.content { padding: 22px 28px; }
-.results-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; font-size: 13px; color: #555; }
-.results-pill { background: #003057; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; }
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--komax-gray);
+    color: var(--komax-text);
+    min-height: 100vh;
+  }
 
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  /* HEADER */
+  header {
+    background: var(--komax-blue);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
 
-.card { background: #fff; border-radius: 10px; border: 1px solid #e2e6ec; overflow: hidden; transition: transform 0.15s, box-shadow 0.2s; cursor: pointer; }
-.card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px rgba(0,48,87,0.13); }
-.card-img { width: 100%; height: 150px; background: #f2f5f8; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-.card-img img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
-.no-img { font-size: 44px; color: #c8d4de; }
-.card-body { padding: 11px 13px 13px; }
-.card-partnum { font-size: 15px; font-weight: 800; color: #003057; margin-bottom: 5px; letter-spacing: 0.3px; }
-.card-desc { font-size: 12px; color: #555; margin-bottom: 8px; line-height: 1.35; }
-.card-area { display: inline-block; background: #e8eef5; color: #003057; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 10px; letter-spacing: 0.3px; margin-bottom: 10px; }
-.card-actions { display: flex; gap: 7px; }
-.btn-pdf { display: flex; align-items: center; gap: 4px; background: #e4002b; color: #fff; border: none; border-radius: 5px; padding: 6px 11px; font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none; transition: background 0.15s; }
-.btn-pdf:hover { background: #c0001f; }
-.btn-pdf.disabled { opacity: 0.35; cursor: default; pointer-events: none; }
-.btn-detail { display: flex; align-items: center; gap: 4px; background: #f0f4f8; color: #003057; border: 1px solid #ccd8e5; border-radius: 5px; padding: 6px 11px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
-.btn-detail:hover { background: #dce8f0; }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
 
-.state-box { background: #fff; border-radius: 10px; border: 1px solid #e2e6ec; padding: 60px 24px; text-align: center; }
-.state-box .big-icon { font-size: 52px; display: block; margin-bottom: 14px; }
-.state-box p { font-size: 14px; color: #888; }
-.state-box strong { color: #003057; }
-.loading-wrap { display: flex; align-items: center; gap: 12px; padding: 28px 0; color: #003057; font-size: 14px; }
-.spinner { width: 22px; height: 22px; border: 3px solid #d0dce8; border-top-color: #003057; border-radius: 50%; animation: spin 0.7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.error-msg { background: #fff5f6; border: 1px solid #f5bfc5; border-radius: 8px; padding: 14px 18px; color: #a0001a; font-size: 13px; }
+  .komax-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
-.modal-bg.open { display: flex; }
-.modal { background: #fff; border-radius: 14px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; padding: 26px; position: relative; }
-.modal-close { position: absolute; top: 14px; right: 14px; background: #f0f2f6; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; color: #555; }
-.modal-img-wrap { width: 100%; height: 200px; background: #f2f5f8; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 18px; overflow: hidden; }
-.modal-img-wrap img { width: 100%; height: 100%; object-fit: contain; padding: 16px; }
-.modal-title { font-size: 17px; font-weight: 700; color: #1a1a2e; margin-bottom: 16px; }
-.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-.modal-field { background: #f5f7fa; border-radius: 8px; padding: 11px 14px; }
-.modal-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.7px; color: #888; margin-bottom: 4px; }
-.modal-val { font-size: 14px; font-weight: 700; color: #003057; }
-.modal-actions { display: flex; gap: 10px; }
+  .logo-k {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -1px;
+    line-height: 1;
+  }
 
-.admin-panel { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 300; align-items: center; justify-content: center; padding: 20px; }
-.admin-panel.open { display: flex; }
-.admin-box { background: #fff; border-radius: 14px; width: 100%; max-width: 580px; max-height: 92vh; overflow-y: auto; padding: 28px; position: relative; }
-.admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; padding-bottom: 14px; border-bottom: 2px solid #003057; }
-.admin-header h2 { font-size: 17px; color: #003057; font-weight: 700; }
-.login-box { background: #fff; border-radius: 14px; padding: 36px 32px; width: 100%; max-width: 360px; text-align: center; }
-.login-box h3 { font-size: 18px; color: #003057; margin-bottom: 20px; font-weight: 700; }
-.login-box input { width: 100%; border: 1px solid #d5dce5; border-radius: 6px; padding: 10px 14px; font-size: 14px; margin-bottom: 12px; outline: none; }
-.login-box input:focus { border-color: #003057; }
-.btn-login { background: #003057; color: #fff; border: none; border-radius: 7px; padding: 10px 0; font-size: 14px; font-weight: 700; width: 100%; cursor: pointer; }
-.btn-login:hover { background: #00487a; }
-.login-err { color: #c62828; font-size: 13px; margin-top: 8px; display: none; }
-.form-row { margin-bottom: 13px; }
-.form-row label { display: block; font-size: 12px; font-weight: 600; color: #555; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
-.form-row input { width: 100%; border: 1px solid #d5dce5; border-radius: 6px; padding: 9px 12px; font-size: 13px; color: #1a1a2e; outline: none; }
-.form-row input:focus { border-color: #003057; }
-.form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.btn-save { background: #003057; color: #fff; border: none; border-radius: 7px; padding: 11px 24px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 6px; transition: background 0.15s; }
-.btn-save:hover { background: #00487a; }
-.admin-msg { margin-top: 10px; padding: 10px 14px; border-radius: 6px; font-size: 13px; display: none; }
-.admin-msg.ok { background: #e8f5e9; color: #2e7d32; display: block; }
-.admin-msg.err { background: #ffebee; color: #c62828; display: block; }
-.saved-section { margin-top: 24px; border-top: 1px solid #eee; padding-top: 18px; }
-.saved-section h3 { font-size: 14px; font-weight: 700; color: #003057; margin-bottom: 12px; }
-.saved-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f5f7fa; border-radius: 6px; margin-bottom: 6px; font-size: 13px; color: #333; }
-.btn-del { background: none; border: none; color: #e4002b; cursor: pointer; font-size: 16px; font-weight: 700; padding: 0 4px; }
+  .logo-dot {
+    width: 8px; height: 8px;
+    background: var(--komax-red);
+    border-radius: 50%;
+    margin-bottom: 2px;
+  }
+
+  .header-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(255,255,255,0.2);
+  }
+
+  .header-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .header-subtitle {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 300;
+    margin-top: 1px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn-admin {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.7);
+    padding: 6px 16px;
+    border-radius: var(--radius);
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .btn-admin:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border-color: rgba(255,255,255,0.5);
+  }
+
+  /* TABS */
+  .tabs {
+    background: var(--komax-blue);
+    padding: 0 32px;
+    display: flex;
+    gap: 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .tab {
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+  }
+  .tab:hover { color: rgba(255,255,255,0.8); }
+  .tab.active {
+    color: white;
+    border-bottom-color: var(--komax-red);
+  }
+
+  /* MAIN */
+  main { padding: 28px 32px; max-width: 1200px; margin: 0 auto; }
+
+  /* SEARCH SECTION */
+  .search-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--komax-gray-mid);
+    margin-bottom: 24px;
+  }
+
+  .search-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--komax-gray-dark);
+    margin-bottom: 12px;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .field-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--komax-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .field-group input, .field-group select {
+    padding: 10px 14px;
+    border: 1.5px solid var(--komax-gray-mid);
+    border-radius: var(--radius);
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    color: var(--komax-text);
+    background: white;
+    transition: border-color 0.2s;
+    outline: none;
+    height: 42px;
+  }
+  .field-group input:focus, .field-group select:focus {
+    border-color: var(--komax-blue-mid);
+  }
+  .field-group input::placeholder { color: var(--komax-gray-mid); }
+
+  .btn-search {
+    background: var(--komax-blue);
+    color: white;
+    border: none;
+    padding: 0 28px;
+    height: 42px;
+    border-radius: var(--radius);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .btn-search:hover { background: var(--komax-blue-mid); }
+
+  .btn-clear {
+    background: transparent;
+    color: var(--komax-gray-dark);
+    border: 1.5px solid var(--komax-gray-mid);
+    padding: 0 16px;
+    height: 42px;
+    border-radius: var(--radius);
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-clear:hover { border-color: var(--komax-gray-dark); color: var(--komax-text); }
+
+  .search-hint {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--komax-gray-dark);
+  }
+  .search-hint span { color: var(--komax-blue); font-weight: 500; }
+
+  /* STATUS BAR */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .status-text {
+    font-size: 13px;
+    color: var(--komax-gray-dark);
+  }
+  .status-text strong { color: var(--komax-text); }
+
+  .area-badge {
+    background: var(--komax-blue);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  /* GRID */
+  .parts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .part-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--komax-gray-mid);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .part-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--komax-blue-mid);
+  }
+
+  .part-card-image {
+    width: 100%;
+    height: 160px;
+    object-fit: contain;
+    background: var(--komax-gray);
+    padding: 12px;
+  }
+
+  .part-card-image-placeholder {
+    width: 100%;
+    height: 160px;
+    background: var(--komax-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--komax-gray-mid);
+    font-size: 36px;
+  }
+
+  .part-card-body {
+    padding: 12px 14px;
+    border-top: 1px solid var(--komax-gray);
+  }
+
+  .part-card-number {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--komax-blue);
+    letter-spacing: 0.3px;
+  }
+
+  .part-card-area {
+    font-size: 11px;
+    color: var(--komax-gray-dark);
+    margin-top: 2px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  /* DETAIL VIEW */
+  .detail-view {
+    display: none;
+  }
+
+  .detail-back {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--komax-blue);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 20px;
+    width: fit-content;
+    transition: gap 0.2s;
+  }
+  .detail-back:hover { gap: 12px; }
+  .detail-back svg { width: 16px; height: 16px; }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .detail-image-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--komax-gray-mid);
+  }
+
+  .detail-image-card img {
+    width: 100%;
+    height: 280px;
+    object-fit: contain;
+    background: var(--komax-gray);
+    border-radius: var(--radius);
+    padding: 12px;
+  }
+
+  .detail-image-placeholder {
+    width: 100%;
+    height: 280px;
+    background: var(--komax-gray);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+    color: var(--komax-gray-mid);
+  }
+
+  .detail-info-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--komax-gray-mid);
+  }
+
+  .detail-part-number {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--komax-blue);
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .detail-description {
+    font-size: 15px;
+    color: var(--komax-text);
+    margin-bottom: 20px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .detail-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .detail-field {
+    background: var(--komax-gray);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+  }
+
+  .detail-field-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--komax-gray-dark);
+    margin-bottom: 4px;
+  }
+
+  .detail-field-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--komax-text);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.2px;
+  }
+
+  .detail-field-value.empty { color: var(--komax-gray-mid); font-weight: 400; font-size: 13px; }
+
+  .pdf-section {
+    border-top: 1px solid var(--komax-gray);
+    padding-top: 20px;
+  }
+
+  .pdf-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--komax-gray-dark);
+    margin-bottom: 10px;
+  }
+
+  .pdf-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-pdf {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--komax-red);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .btn-pdf:hover { background: #c0001e; }
+  .btn-pdf svg { width: 16px; height: 16px; }
+
+  /* EMPTY / LOADING STATES */
+  .state-box {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 48px;
+    text-align: center;
+    border: 1px solid var(--komax-gray-mid);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .state-icon { font-size: 48px; margin-bottom: 16px; }
+
+  .state-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--komax-blue);
+    margin-bottom: 8px;
+  }
+
+  .state-text { font-size: 14px; color: var(--komax-gray-dark); line-height: 1.5; }
+
+  .error-box {
+    background: #fff5f5;
+    border: 1px solid #ffcccc;
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #c0001e;
+    margin-bottom: 16px;
+  }
+
+  /* ADMIN MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,48,87,0.5);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .modal-header {
+    background: var(--komax-blue);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .modal-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  .modal-close {
+    background: none; border: none;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer; font-size: 22px; line-height: 1;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: white; }
+
+  .modal-body { padding: 24px; }
+
+  .modal-section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--komax-blue);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--komax-blue-light);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .form-row.full { grid-template-columns: 1fr; }
+
+  .form-field { display: flex; flex-direction: column; gap: 5px; }
+
+  .form-field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--komax-text);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .form-field input, .form-field select, .form-field textarea {
+    padding: 9px 12px;
+    border: 1.5px solid var(--komax-gray-mid);
+    border-radius: var(--radius);
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    color: var(--komax-text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+    border-color: var(--komax-blue-mid);
+  }
+  .form-field textarea { resize: vertical; min-height: 60px; }
+
+  .pdf-settings-section {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--komax-gray);
+  }
+
+  .pdf-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .pdf-row input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1.5px solid var(--komax-gray-mid);
+    border-radius: var(--radius);
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    outline: none;
+  }
+  .pdf-row input:focus { border-color: var(--komax-blue-mid); }
+
+  .pdf-row-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--komax-text);
+    white-space: nowrap;
+    min-width: 120px;
+  }
+
+  .modal-footer {
+    padding: 16px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid var(--komax-gray);
+  }
+
+  .btn-cancel {
+    background: white;
+    border: 1.5px solid var(--komax-gray-mid);
+    color: var(--komax-gray-dark);
+    padding: 9px 20px;
+    border-radius: var(--radius);
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-cancel:hover { border-color: var(--komax-gray-dark); color: var(--komax-text); }
+
+  .btn-save {
+    background: var(--komax-blue);
+    color: white;
+    border: none;
+    padding: 9px 24px;
+    border-radius: var(--radius);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-save:hover { background: var(--komax-blue-mid); }
+
+  /* LOGIN MODAL */
+  .login-modal {
+    background: white;
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 360px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+
+  .login-header {
+    background: var(--komax-blue);
+    padding: 20px 24px;
+    text-align: center;
+  }
+
+  .login-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .login-body {
+    padding: 24px;
+  }
+
+  .login-error {
+    background: #fff5f5;
+    border: 1px solid #ffcccc;
+    color: #c0001e;
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    display: none;
+  }
+
+  .login-footer {
+    padding: 0 24px 24px;
+    display: flex;
+    gap: 10px;
+  }
+
+  /* ADMIN PARTS LIST */
+  .admin-parts-list {
+    margin-top: 16px;
+  }
+
+  .admin-part-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--komax-gray);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    border: 1px solid var(--komax-gray-mid);
+  }
+
+  .admin-part-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .admin-part-number {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--komax-blue);
+  }
+
+  .admin-part-desc {
+    font-size: 12px;
+    color: var(--komax-gray-dark);
+  }
+
+  .btn-delete {
+    background: none;
+    border: none;
+    color: var(--komax-gray-dark);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-size: 16px;
+  }
+  .btn-delete:hover { color: var(--komax-red); background: #fff0f0; }
+
+  .loading-spinner {
+    display: inline-block;
+    width: 20px; height: 20px;
+    border: 2px solid var(--komax-gray-mid);
+    border-top-color: var(--komax-blue);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .red-accent {
+    width: 3px;
+    background: var(--komax-red);
+    border-radius: 2px;
+    margin-right: 12px;
+    align-self: stretch;
+  }
+
+  /* AREA LIST VIEW */
+  .area-section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.25s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-top">
-    <div style="display:flex;align-items:center;">
-      <div class="logo"><span class="logo-k">K</span><span class="logo-rest">OMAX</span></div>
-      <span class="machine-tag">BT 752-722</span>
+<header>
+  <div class="header-left">
+    <div class="komax-logo">
+      <span class="logo-k">KOMAX</span>
+      <div class="logo-dot"></div>
     </div>
-    <div class="header-right">
-      <div class="header-subtitle">Pretraga rezervnih delova</div>
-      <button class="admin-btn" onclick="openAdmin()">⚙ Admin</button>
+    <div class="header-divider"></div>
+    <div>
+      <div class="header-title">BT752-722 Parts</div>
+      <div class="header-subtitle">Rezervni delovi i lokacije</div>
     </div>
   </div>
-  <div class="search-section">
-    <div class="input-wrap">
-      <span class="input-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="Unesite Part broj..." onkeydown="if(event.key==='Enter')doSearch()">
-    </div>
-    <select class="area-select" id="areaSelect">
-      <option value="">AREA</option>
-    </select>
-    <button class="search-btn" onclick="doSearch()">Pretraži</button>
+  <div class="header-right">
+    <button class="btn-admin" onclick="openAdmin()">⚙ Admin</button>
   </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('search')">Pretraga</div>
+  <div class="tab" onclick="switchTab('all')">Svi delovi</div>
 </div>
 
-<div class="content">
-  <div id="resultsBar" class="results-bar" style="display:none;">
-    <span id="resultsLabel">Rezultati</span>
-    <span class="results-pill" id="resultsCount">0</span>
+<main>
+  <div id="errorBox" class="error-box" style="display:none;"></div>
+
+  <!-- SEARCH CARD -->
+  <div class="search-card">
+    <div class="search-label">Pretraga delova</div>
+    <div class="search-row">
+      <div class="field-group">
+        <div class="field-label">Part broj</div>
+        <input type="text" id="inputPartNumber" placeholder="npr. 0087474" onkeydown="if(event.key==='Enter') doSearch()">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Area</div>
+        <select id="selectArea">
+          <option value="">— Sve aree —</option>
+        </select>
+      </div>
+      <button class="btn-search" onclick="doSearch()">Traži</button>
+      <button class="btn-clear" onclick="clearSearch()">Poništi</button>
+    </div>
+    <div class="search-hint">
+      Unesite <span>part broj</span>, odaberite <span>areu</span>, ili kombinirajte oba uslova.
+    </div>
   </div>
-  <div id="mainArea">
+
+  <!-- SEARCH VIEW -->
+  <div id="searchView">
     <div class="state-box">
-      <span class="big-icon">🔧</span>
-      <p>Unesite <strong>Part broj</strong> ili odaberite <strong>Area</strong> iz padajućeg menija.</p>
+      <div class="state-icon">🔍</div>
+      <div class="state-title">Unesite kriterijum pretrage</div>
+      <div class="state-text">Unesite part broj i/ili odaberite areu, pa kliknite Traži.</div>
+    </div>
+  </div>
+
+  <!-- DETAIL VIEW -->
+  <div id="detailView" class="detail-view">
+    <div class="detail-back" onclick="backToResults()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Nazad na rezultate
+    </div>
+    <div class="detail-grid">
+      <div class="detail-image-card">
+        <div id="detailImage"></div>
+      </div>
+      <div class="detail-info-card">
+        <div class="detail-part-number" id="detailPartNumber"></div>
+        <div class="detail-description" id="detailDescription"></div>
+        <div class="detail-fields">
+          <div class="detail-field">
+            <div class="detail-field-label">R-Broj</div>
+            <div class="detail-field-value" id="detailRNumber"></div>
+          </div>
+          <div class="detail-field">
+            <div class="detail-field-label">Lokacija</div>
+            <div class="detail-field-value" id="detailLocation"></div>
+          </div>
+          <div class="detail-field" style="grid-column: 1/-1;">
+            <div class="detail-field-label">Area</div>
+            <div class="detail-field-value" id="detailArea"></div>
+          </div>
+        </div>
+        <div class="pdf-section" id="detailPdfSection"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="login-modal">
+    <div class="login-header">
+      <div class="login-title">Admin pristup</div>
+    </div>
+    <div class="login-body">
+      <div class="login-error" id="loginError">Pogrešna lozinka.</div>
+      <div class="form-field">
+        <label>Lozinka</label>
+        <input type="password" id="loginPassword" placeholder="Unesite lozinku" onkeydown="if(event.key==='Enter') doLogin()">
+      </div>
+    </div>
+    <div class="login-footer">
+      <button class="btn-cancel" style="flex:1;" onclick="closeLogin()">Otkaži</button>
+      <button class="btn-save" style="flex:1;" onclick="doLogin()">Prijavi se</button>
     </div>
   </div>
 </div>
 
-<div class="modal-bg" id="detailModal" onclick="if(event.target===this)closeDetail()">
+<!-- ADMIN MODAL -->
+<div class="modal-overlay" id="adminModal">
   <div class="modal">
-    <button class="modal-close" onclick="closeDetail()">✕</button>
-    <div class="modal-img-wrap" id="mImg"></div>
-    <div class="modal-title" id="mTitle"></div>
-    <div class="modal-grid" id="mFields"></div>
-    <div class="modal-actions" id="mActions"></div>
-  </div>
-</div>
-
-<div class="admin-panel" id="adminPanel" >
-  <div id="adminInner">
-    <div class="login-box" id="loginBox">
-      <h3>🔐 Admin pristup</h3>
-      <input type="password" id="adminPass" placeholder="Lozinka..." onkeydown="if(event.key==='Enter')checkLogin()">
-      <button class="btn-login" onclick="checkLogin()">Prijavi se</button>
-      <div class="login-err" id="loginErr">Pogrešna lozinka!</div>
+    <div class="modal-header">
+      <div class="modal-title">Admin panel — Upravljanje delovima</div>
+      <button class="modal-close" onclick="closeAdmin()">×</button>
     </div>
-    <div class="admin-box" id="adminForm" style="display:none;">
-      <div class="admin-header">
-        <h2>⚙ Admin — Dodaj deo</h2>
-        <button class="modal-close" onclick="closeAdmin()">✕</button>
+    <div class="modal-body">
+
+      <!-- PDF SETTINGS -->
+      <div class="modal-section-title">PDF Dokumentacija</div>
+      <div style="margin-bottom:20px;">
+        <div class="pdf-row">
+          <span class="pdf-row-label">PDF 1 — Naziv:</span>
+          <input type="text" id="pdf1Name" placeholder="npr. BT752 Maintenance Manual">
+        </div>
+        <div class="pdf-row">
+          <span class="pdf-row-label">PDF 1 — Link:</span>
+          <input type="text" id="pdf1Url" placeholder="https://...">
+        </div>
+        <div class="pdf-row" style="margin-top:10px;">
+          <span class="pdf-row-label">PDF 2 — Naziv:</span>
+          <input type="text" id="pdf2Name" placeholder="npr. Seal Applicator Manual">
+        </div>
+        <div class="pdf-row">
+          <span class="pdf-row-label">PDF 2 — Link:</span>
+          <input type="text" id="pdf2Url" placeholder="https://... (opciono)">
+        </div>
+        <button class="btn-save" style="margin-top:10px;" onclick="savePdfSettings()">Sačuvaj PDF linkove</button>
       </div>
-      <div class="form-2col">
-        <div class="form-row"><label>Part broj *</label><input type="text" id="fPartNum" placeholder="npr. 10022334"></div>
-        <div class="form-row"><label>R-broj</label><input type="text" id="fRNum" placeholder="npr. R-1042"></div>
+
+      <!-- ADD PART -->
+      <div class="modal-section-title">Dodaj novi deo</div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Part broj *</label>
+          <input type="text" id="formPartNumber" placeholder="0087474">
+        </div>
+        <div class="form-field">
+          <label>R-Broj</label>
+          <input type="text" id="formRNumber" placeholder="R000003962">
+        </div>
       </div>
-      <div class="form-row"><label>Opis dela *</label><input type="text" id="fDesc" placeholder="Naziv i opis dela"></div>
-      <div class="form-2col">
-        <div class="form-row"><label>Area (oblast)</label><input type="text" id="fArea" placeholder="npr. CRIMPING"></div>
-        <div class="form-row"><label>Lokacija</label><input type="text" id="fLoc" placeholder="npr. A-03-02"></div>
+      <div class="form-row full">
+        <div class="form-field">
+          <label>Opis (Description) *</label>
+          <input type="text" id="formDescription" placeholder="Safety cover monitoring bt752 Set">
+        </div>
       </div>
-      <div class="form-row"><label>URL slike</label><input type="text" id="fImg" placeholder="https://raw.githubusercontent.com/..."></div>
-      <div class="form-row"><label>URL PDF-a</label><input type="text" id="fPdf" placeholder="https://raw.githubusercontent.com/..."></div>
-      <button class="btn-save" onclick="savePart()">💾 Sačuvaj deo</button>
-      <div class="admin-msg" id="adminMsg"></div>
-      <div class="saved-section">
-        <h3>Sačuvani delovi</h3>
-        <div id="savedList">Učitavanje...</div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Area *</label>
+          <input type="text" id="formArea" placeholder="BASIC_EQUIPMENT_PRESS_BT_752">
+        </div>
+        <div class="form-field">
+          <label>Lokacija</label>
+          <input type="text" id="formLocation" placeholder="1-H-4-3 ili BLOCK..">
+        </div>
+      </div>
+      <div class="form-row full">
+        <div class="form-field">
+          <label>URL slike</label>
+          <input type="text" id="formImage" placeholder="https://... (OneDrive, GitHub raw...)">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeAdmin()">Zatvori</button>
+      <button class="btn-save" onclick="addPart()">Dodaj deo</button>
+    </div>
+
+    <!-- PARTS LIST -->
+    <div class="modal-body" style="border-top:2px solid var(--komax-blue-light);">
+      <div class="modal-section-title">Uneseni delovi</div>
+      <div id="adminPartsList">
+        <div class="state-text">Učitavanje...</div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const BIN_ID = "69fe50c0adc21f119a725f40";
-const API_KEY = "$2a$10$vGksn.m1pXrr6ODqKiVeXuL5j0R3HwonCvVNR8tE0NEy8RHlCxjn.";
-const ADMIN_PASS = "jazakikomaks257";
-const API_BASE = "https://api.jsonbin.io/v3/b/" + BIN_ID;
+const BIN_ID = '69fe50c0adc21f119a725f40';
+const API_KEY = '$2a$10$vGksn.m1pXrr6ODqKiVeXuL5j0R3HwonCvVNR8tE0NEy8RHlCxjn.';
+const ADMIN_PASSWORD = 'jazakikomaks257';
+const API_BASE = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-async function loadParts() {
-  const res = await fetch(API_BASE + "/latest", { headers: { "X-Master-Key": API_KEY } });
-  const json = await res.json();
-  const rec = json.record;
-  return Array.isArray(rec) ? rec.filter(p => !p.init) : [];
+let allData = { parts: [], pdfs: { pdf1: { name: '', url: '' }, pdf2: { name: '', url: '' } } };
+let lastResults = [];
+let currentTab = 'search';
+let isAdminLoggedIn = false;
+
+// ── DATA ──────────────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const r = await fetch(API_BASE + '/latest', {
+      headers: { 'X-Master-Key': API_KEY }
+    });
+    const d = await r.json();
+    const record = d.record;
+
+    // Support both array format (old) and object format (new)
+    if (Array.isArray(record)) {
+      allData.parts = record;
+      allData.pdfs = { pdf1: { name: '', url: '' }, pdf2: { name: '', url: '' } };
+    } else {
+      allData.parts = record.parts || [];
+      allData.pdfs = record.pdfs || { pdf1: { name: '', url: '' }, pdf2: { name: '', url: '' } };
+    }
+
+    populateAreaDropdown();
+    if (currentTab === 'all') showAllParts();
+  } catch(e) {
+    showError('Greška pri učitavanju podataka: ' + e.message);
+  }
 }
 
-async function saveParts(parts) {
-  await fetch(API_BASE, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
-    body: JSON.stringify(parts)
+async function saveData() {
+  const r = await fetch(API_BASE, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Master-Key': API_KEY
+    },
+    body: JSON.stringify(allData)
+  });
+  if (!r.ok) throw new Error('Greška pri čuvanju');
+}
+
+function populateAreaDropdown() {
+  const areas = [...new Set(allData.parts.map(p => p.area).filter(Boolean))].sort();
+  const sel = document.getElementById('selectArea');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">— Sve aree —</option>';
+  areas.forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = a;
+    opt.textContent = a.replace(/_/g, ' ');
+    if (a === current) opt.selected = true;
+    sel.appendChild(opt);
   });
 }
 
-async function populateAreas() {
-  try {
-    const parts = await loadParts();
-    const areas = [...new Set(parts.map(p => (p.area || "").trim().toUpperCase()).filter(Boolean))].sort();
-    const sel = document.getElementById("areaSelect");
-    sel.innerHTML = `<option value="">AREA</option>` + areas.map(a => `<option value="${a}">${a}</option>`).join("");
-  } catch(e) {}
-}
+// ── SEARCH ────────────────────────────────────────────────────────────
+function doSearch() {
+  const pn = document.getElementById('inputPartNumber').value.trim().toLowerCase();
+  const area = document.getElementById('selectArea').value;
 
-populateAreas();
-
-async function doSearch() {
-  const q = document.getElementById("searchInput").value.trim().toLowerCase();
-  const area = document.getElementById("areaSelect").value;
-  const main = document.getElementById("mainArea");
-  const bar = document.getElementById("resultsBar");
-
-  if (!q && !area) {
-    main.innerHTML = `<div class="state-box"><span class="big-icon">🔧</span><p>Unesite <strong>Part broj</strong> ili odaberite <strong>Area</strong> iz padajućeg menija.</p></div>`;
-    bar.style.display = "none";
+  if (!pn && !area) {
+    showState('Unesite kriterijum pretrage', 'Unesite part broj i/ili odaberite areu, pa kliknite Traži.', '🔍');
     return;
   }
 
-  main.innerHTML = `<div class="loading-wrap"><div class="spinner"></div> Pretraga u toku...</div>`;
-  bar.style.display = "none";
+  let results = allData.parts;
+  if (pn) results = results.filter(p => p.partNumber && p.partNumber.toLowerCase().includes(pn));
+  if (area) results = results.filter(p => p.area === area);
 
-  try {
-    const parts = await loadParts();
-    let results;
+  lastResults = results;
 
-    if (q && !area) {
-      // Samo part broj — prikazuje sve bez obzira na area
-      results = parts.filter(p => String(p.partNumber || "").toLowerCase().includes(q));
-    } else if (!q && area) {
-      // Samo area — lista svih delova iz te oblasti
-      results = parts.filter(p => (p.area || "").toUpperCase() === area);
-    } else {
-      // Oboje — precizna kombinovana pretraga
-      results = parts.filter(p =>
-        String(p.partNumber || "").toLowerCase().includes(q) &&
-        (p.area || "").toUpperCase() === area
-      );
-    }
-
-    bar.style.display = "flex";
-    document.getElementById("resultsCount").textContent = results.length;
-    document.getElementById("resultsLabel").textContent = results.length > 0
-      ? `Pronađeno ${results.length} rezultata` : "Nema rezultata";
-
-    if (results.length === 0) {
-      main.innerHTML = `<div class="state-box"><span class="big-icon">🔍</span><p>Nema rezultata. Proverite Part broj ili odaberite drugu oblast.</p></div>`;
-      return;
-    }
-
-    main.innerHTML = `<div class="grid">${results.map(renderCard).join("")}</div>`;
-  } catch(e) {
-    bar.style.display = "none";
-    main.innerHTML = `<div class="error-msg">❌ Greška pri učitavanju: ${e.message}</div>`;
+  if (results.length === 0) {
+    showState('Nema rezultata', 'Nijedan deo ne odgovara zadatim kriterijumima.', '📦');
+    return;
   }
+
+  if (results.length === 1) {
+    showDetail(results[0]);
+    return;
+  }
+
+  showGrid(results, area ? `Area: ${area.replace(/_/g, ' ')}` : `Rezultati pretrage`);
 }
 
-function renderCard(p) {
-  const pn = p.partNumber || "—";
-  const desc = p.description || "—";
-  const rNum = p.rNumber || "—";
-  const loc = p.location || "—";
-  const area = p.area || "—";
-  const imgUrl = p.image || "";
-  const pdfUrl = p.pdf || "";
-  const d = encodeURIComponent(JSON.stringify({pn,desc,rNum,loc,area,imgUrl,pdfUrl}));
-
-  return `
-  <div class="card" onclick="openDetail('${d}')">
-    <div class="card-img">
-      ${imgUrl ? `<img src="${imgUrl}" alt="${pn}" onerror="this.style.display='none';this.nextSibling.style.display='block'"><div class="no-img" style="display:none">🔧</div>` : `<div class="no-img">🔧</div>`}
-    </div>
-    <div class="card-body">
-      <div class="card-partnum">${pn}</div>
-      <div class="card-desc">${desc}</div>
-      <div class="card-area">${area}</div>
-      <div class="card-actions">
-        ${pdfUrl ? `<a class="btn-pdf" href="${pdfUrl}" target="_blank" onclick="event.stopPropagation()">📄 PDF</a>` : `<span class="btn-pdf disabled">📄 PDF</span>`}
-        <button class="btn-detail" onclick="event.stopPropagation();openDetail('${d}')">🔎 Detalji</button>
-      </div>
-    </div>
-  </div>`;
+function clearSearch() {
+  document.getElementById('inputPartNumber').value = '';
+  document.getElementById('selectArea').value = '';
+  showState('Unesite kriterijum pretrage', 'Unesite part broj i/ili odaberite areu, pa kliknite Traži.', '🔍');
 }
 
-function openDetail(encoded) {
-  const p = JSON.parse(decodeURIComponent(encoded));
-  document.getElementById("mImg").innerHTML = p.imgUrl
-    ? `<img src="${p.imgUrl}" alt="${p.pn}">` : `<div style="font-size:56px;color:#c8d4de">🔧</div>`;
-  document.getElementById("mTitle").textContent = p.desc;
-  document.getElementById("mFields").innerHTML = `
-    <div class="modal-field"><div class="modal-label">Part Number</div><div class="modal-val">${p.pn}</div></div>
-    <div class="modal-field"><div class="modal-label">R-Broj</div><div class="modal-val">${p.rNum}</div></div>
-    <div class="modal-field"><div class="modal-label">Area</div><div class="modal-val">${p.area}</div></div>
-    <div class="modal-field"><div class="modal-label">Lokacija</div><div class="modal-val">${p.loc}</div></div>`;
-  document.getElementById("mActions").innerHTML = p.pdfUrl
-    ? `<a class="btn-pdf" href="${p.pdfUrl}" target="_blank">📄 Otvori PDF</a>` : "";
-  document.getElementById("detailModal").classList.add("open");
+// ── VIEWS ─────────────────────────────────────────────────────────────
+function showState(title, text, icon) {
+  const sv = document.getElementById('searchView');
+  sv.style.display = 'block';
+  sv.innerHTML = `<div class="state-box fade-in"><div class="state-icon">${icon}</div><div class="state-title">${title}</div><div class="state-text">${text}</div></div>`;
+  document.getElementById('detailView').style.display = 'none';
 }
-function closeDetail() { document.getElementById("detailModal").classList.remove("open"); }
 
-function openAdmin() {
-  document.getElementById("adminPanel").classList.add("open");
-  document.getElementById("loginBox").style.display = "block";
-  document.getElementById("adminForm").style.display = "none";
-  document.getElementById("adminPass").value = "";
-  document.getElementById("loginErr").style.display = "none";
+function showGrid(parts, label) {
+  const sv = document.getElementById('searchView');
+  sv.style.display = 'block';
+  document.getElementById('detailView').style.display = 'none';
+
+  let html = `<div class="status-bar"><div class="status-text">Pronađeno: <strong>${parts.length} dela/delova</strong></div>`;
+  if (label) html += `<div class="area-badge">${label}</div>`;
+  html += `</div><div class="parts-grid fade-in">`;
+
+  parts.forEach((p, i) => {
+    const imgHtml = p.image
+      ? `<img class="part-card-image" src="${p.image}" alt="${p.partNumber}" onerror="this.parentNode.innerHTML='<div class=\\'part-card-image-placeholder\\'>📦</div>'">`
+      : `<div class="part-card-image-placeholder">📦</div>`;
+    html += `
+      <div class="part-card" onclick="showDetail(lastResults[${i}])">
+        ${imgHtml}
+        <div class="part-card-body">
+          <div class="part-card-number">${p.partNumber || '—'}</div>
+          <div class="part-card-area">${(p.area || '').replace(/_/g, ' ')}</div>
+        </div>
+      </div>`;
+  });
+
+  html += `</div>`;
+  sv.innerHTML = html;
 }
-function closeAdmin() { document.getElementById("adminPanel").classList.remove("open"); }
 
-function checkLogin() {
-  if (document.getElementById("adminPass").value === ADMIN_PASS) {
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("adminForm").style.display = "block";
-    loadSavedList();
+function showAllParts() {
+  if (allData.parts.length === 0) {
+    showState('Nema unetih delova', 'Admin još uvek nije uneo nijedan deo.', '📦');
+    return;
+  }
+  showGrid(allData.parts, 'Svi delovi');
+  lastResults = allData.parts;
+}
+
+function showDetail(part) {
+  document.getElementById('searchView').style.display = 'none';
+  const dv = document.getElementById('detailView');
+  dv.style.display = 'block';
+  dv.classList.add('fade-in');
+
+  document.getElementById('detailPartNumber').textContent = part.partNumber || '—';
+  document.getElementById('detailDescription').textContent = part.description || '—';
+  document.getElementById('detailRNumber').innerHTML = part.rNumber
+    ? part.rNumber
+    : `<span class="empty">—</span>`;
+  document.getElementById('detailLocation').innerHTML = part.location
+    ? part.location
+    : `<span class="empty">—</span>`;
+  document.getElementById('detailArea').textContent = (part.area || '—').replace(/_/g, ' ');
+
+  const imgEl = document.getElementById('detailImage');
+  if (part.image) {
+    imgEl.innerHTML = `<img src="${part.image}" alt="${part.partNumber}" onerror="this.outerHTML='<div class=\\'detail-image-placeholder\\'>📦</div>'">`;
   } else {
-    document.getElementById("loginErr").style.display = "block";
+    imgEl.innerHTML = `<div class="detail-image-placeholder">📦</div>`;
+  }
+
+  // PDF buttons
+  const pdfSection = document.getElementById('detailPdfSection');
+  let pdfHtml = '';
+  const pdfs = allData.pdfs || {};
+  if (pdfs.pdf1 && pdfs.pdf1.url) {
+    pdfHtml += `<div class="pdf-label">Dokumentacija</div><div class="pdf-buttons">`;
+    pdfHtml += `<a class="btn-pdf" href="${pdfs.pdf1.url}" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>${pdfs.pdf1.name || 'Otvori PDF'}</a>`;
+    if (pdfs.pdf2 && pdfs.pdf2.url) {
+      pdfHtml += `<a class="btn-pdf" href="${pdfs.pdf2.url}" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>${pdfs.pdf2.name || 'Otvori PDF 2'}</a>`;
+    }
+    pdfHtml += `</div>`;
+  } else {
+    pdfHtml = `<div class="pdf-label">Dokumentacija</div><div style="font-size:13px;color:var(--komax-gray-dark);">PDF link nije postavljen.</div>`;
+  }
+  pdfSection.innerHTML = pdfHtml;
+}
+
+function backToResults() {
+  document.getElementById('detailView').style.display = 'none';
+  document.getElementById('searchView').style.display = 'block';
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && tab === 'search') || (i === 1 && tab === 'all'));
+  });
+  document.getElementById('detailView').style.display = 'none';
+  if (tab === 'all') {
+    showAllParts();
+  } else {
+    showState('Unesite kriterijum pretrage', 'Unesite part broj i/ili odaberite areu, pa kliknite Traži.', '🔍');
   }
 }
 
-async function loadSavedList() {
-  const list = document.getElementById("savedList");
-  list.innerHTML = "Učitavanje...";
+// ── ADMIN ─────────────────────────────────────────────────────────────
+function openAdmin() {
+  if (!isAdminLoggedIn) {
+    document.getElementById('loginModal').classList.add('open');
+    setTimeout(() => document.getElementById('loginPassword').focus(), 100);
+  } else {
+    openAdminPanel();
+  }
+}
+
+function closeLogin() {
+  document.getElementById('loginModal').classList.remove('open');
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
+
+function doLogin() {
+  const pw = document.getElementById('loginPassword').value;
+  if (pw === ADMIN_PASSWORD) {
+    isAdminLoggedIn = true;
+    closeLogin();
+    openAdminPanel();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+function openAdminPanel() {
+  document.getElementById('adminModal').classList.add('open');
+  // Populate PDF fields
+  const pdfs = allData.pdfs || {};
+  document.getElementById('pdf1Name').value = pdfs.pdf1?.name || '';
+  document.getElementById('pdf1Url').value = pdfs.pdf1?.url || '';
+  document.getElementById('pdf2Name').value = pdfs.pdf2?.name || '';
+  document.getElementById('pdf2Url').value = pdfs.pdf2?.url || '';
+  renderAdminList();
+}
+
+function closeAdmin() {
+  document.getElementById('adminModal').classList.remove('open');
+}
+
+function renderAdminList() {
+  const el = document.getElementById('adminPartsList');
+  if (allData.parts.length === 0) {
+    el.innerHTML = `<div class="state-text">Nema unetih delova.</div>`;
+    return;
+  }
+  el.innerHTML = allData.parts.map((p, i) => `
+    <div class="admin-part-item">
+      <div style="display:flex;align-items:center;">
+        <div class="red-accent"></div>
+        <div class="admin-part-info">
+          <div class="admin-part-number">${p.partNumber || '—'}</div>
+          <div class="admin-part-desc">${(p.description || '').substring(0, 60)}${p.description?.length > 60 ? '…' : ''}</div>
+        </div>
+      </div>
+      <button class="btn-delete" onclick="deletePart(${i})" title="Obriši">🗑</button>
+    </div>`).join('');
+}
+
+async function addPart() {
+  const pn = document.getElementById('formPartNumber').value.trim();
+  const desc = document.getElementById('formDescription').value.trim();
+  const area = document.getElementById('formArea').value.trim();
+
+  if (!pn || !desc || !area) {
+    alert('Part broj, opis i area su obavezna polja.');
+    return;
+  }
+
+  const part = {
+    partNumber: pn,
+    description: desc,
+    rNumber: document.getElementById('formRNumber').value.trim(),
+    area: area,
+    location: document.getElementById('formLocation').value.trim(),
+    image: document.getElementById('formImage').value.trim()
+  };
+
+  allData.parts.push(part);
   try {
-    const parts = await loadParts();
-    if (parts.length === 0) { list.innerHTML = "<p style='font-size:13px;color:#888'>Nema unetih delova.</p>"; return; }
-    list.innerHTML = parts.map((p,i) => `
-      <div class="saved-item">
-        <span><strong>${p.partNumber}</strong> — ${p.description} <span style="color:#003057;font-size:11px;">[${p.area||""}]</span></span>
-        <button class="btn-del" onclick="deletePart(${i})">✕</button>
-      </div>`).join("");
+    await saveData();
+    ['formPartNumber','formDescription','formRNumber','formArea','formLocation','formImage'].forEach(id => document.getElementById(id).value = '');
+    populateAreaDropdown();
+    renderAdminList();
+    if (currentTab === 'all') showAllParts();
   } catch(e) {
-    list.innerHTML = `<p style='color:#c62828;font-size:13px'>Greška: ${e.message}</p>`;
+    allData.parts.pop();
+    showError('Greška pri čuvanju: ' + e.message);
   }
-}
-
-async function savePart() {
-  const pn = document.getElementById("fPartNum").value.trim();
-  const desc = document.getElementById("fDesc").value.trim();
-  const msg = document.getElementById("adminMsg");
-  if (!pn || !desc) { msg.className = "admin-msg err"; msg.textContent = "Part broj i opis su obavezni!"; return; }
-  msg.className = "admin-msg"; msg.textContent = "Čuvanje..."; msg.style.display = "block";
-  try {
-    const parts = await loadParts();
-    parts.push({
-      partNumber: pn, description: desc,
-      rNumber: document.getElementById("fRNum").value.trim(),
-      area: document.getElementById("fArea").value.trim().toUpperCase(),
-      location: document.getElementById("fLoc").value.trim(),
-      image: document.getElementById("fImg").value.trim(),
-      pdf: document.getElementById("fPdf").value.trim()
-    });
-    await saveParts(parts);
-    msg.className = "admin-msg ok"; msg.textContent = "✓ Deo uspešno sačuvan!";
-    ["fPartNum","fRNum","fDesc","fArea","fLoc","fImg","fPdf"].forEach(id => document.getElementById(id).value = "");
-    loadSavedList();
-    populateAreas();
-  } catch(e) { msg.className = "admin-msg err"; msg.textContent = "Greška: " + e.message; }
 }
 
 async function deletePart(index) {
-  if (!confirm("Obrisati ovaj deo?")) return;
+  if (!confirm(`Obrisati deo "${allData.parts[index].partNumber}"?`)) return;
+  const removed = allData.parts.splice(index, 1);
   try {
-    const parts = await loadParts();
-    parts.splice(index, 1);
-    await saveParts(parts);
-    loadSavedList();
-    populateAreas();
-  } catch(e) { alert("Greška pri brisanju: " + e.message); }
+    await saveData();
+    populateAreaDropdown();
+    renderAdminList();
+    if (currentTab === 'all') showAllParts();
+  } catch(e) {
+    allData.parts.splice(index, 0, removed[0]);
+    showError('Greška pri brisanju: ' + e.message);
+  }
 }
+
+async function savePdfSettings() {
+  allData.pdfs = {
+    pdf1: { name: document.getElementById('pdf1Name').value.trim(), url: document.getElementById('pdf1Url').value.trim() },
+    pdf2: { name: document.getElementById('pdf2Name').value.trim(), url: document.getElementById('pdf2Url').value.trim() }
+  };
+  try {
+    await saveData();
+    alert('PDF linkovi sačuvani!');
+  } catch(e) {
+    showError('Greška: ' + e.message);
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorBox');
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 5000);
+}
+
+// Close modals on overlay click
+document.getElementById('loginModal').addEventListener('click', function(e) { if(e.target===this) closeLogin(); });
+document.getElementById('adminModal').addEventListener('click', function(e) { if(e.target===this) closeAdmin(); });
+
+// Init
+loadData();
 </script>
 </body>
 </html>
