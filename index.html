@@ -1309,8 +1309,20 @@ async function addPart() {
     populateAreaDropdown();
     renderAdminList();
     if (currentTab === 'all') showAllParts();
+    // Show success without closing modal
+    const btn = document.querySelector('.modal-footer .btn-save');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Sačuvano!';
+    btn.style.background = '#2e7d32';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 2000);
   } catch(e) {
     allData.parts.pop();
+    // Show error inside modal without closing
+    const btn = document.querySelector('.modal-footer .btn-save');
+    const orig = btn.textContent;
+    btn.textContent = '✗ Greška!';
+    btn.style.background = 'var(--komax-red)';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 3000);
     showError('Greška pri čuvanju: ' + e.message);
   }
 }
@@ -1351,7 +1363,7 @@ function showError(msg) {
 
 // Close modals on overlay click
 document.getElementById('loginModal').addEventListener('click', function(e) { if(e.target===this) closeLogin(); });
-document.getElementById('adminModal').addEventListener('click', function(e) { if(e.target===this) closeAdmin(); });
+// Admin modal ne zatvara se klikom na pozadinu da bi se sprečilo slučajno zatvaranje tokom unosa
 
 // Init
 loadData();
