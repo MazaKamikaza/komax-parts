@@ -831,6 +831,11 @@
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
   }
+  /* FOOTER */
+  .app-footer { max-width: 1100px; margin: 24px auto 0; padding: 24px 24px 36px; border-top: 1px solid var(--komax-gray-mid); text-align: center; color: var(--komax-gray-dark); font-size: 12px; line-height: 1.7; }
+  .app-footer strong { color: var(--komax-text); font-weight: 600; }
+  .footer-update { margin-bottom: 8px; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .footer-copy { color: var(--komax-text); font-weight: 600; margin-bottom: 4px; }
 </style>
 </head>
 <body>
@@ -923,6 +928,16 @@
     </div>
   </div>
 </main>
+
+<footer class="app-footer">
+  <div class="footer-update">Last update: <strong id="last-update">—</strong></div>
+  <div class="footer-copy">© 2026 Yazaki Serbia</div>
+  <div class="footer-meta">
+    Developed by: Sandra Ilić (Process Owner)<br>
+    Approved by: Aleksandar Savić<br>
+    Approved for use by Production Engineering
+  </div>
+</footer>
 
 <!-- LOGIN MODAL -->
 <div class="modal-overlay" id="loginModal">
@@ -1026,51 +1041,123 @@
 </div>
 
 <script>
-const BIN_ID = '69fe50c0adc21f119a725f40';
-const API_KEY = '$2a$10$vGksn.m1pXrr6ODqKiVeXuL5j0R3HwonCvVNR8tE0NEy8RHlCxjn.';
-const ADMIN_PASSWORD = 'jazakikomaks257';
-const API_BASE = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+// ── KONFIGURACIJA ─────────────────────────────────────────────────────
+const SHEET_ID = '1fdRr08T6LGO4R0g-_PsGXT8gQsORNeWZOp46KVJFlwU';           // ID Google Sheeta (deo URL-a izmedju /d/ i /edit)
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyByxQB2C3W_IpORXRia8-LBMY1AhYzaycpw_yzWF9ZNQo2GqQ3kiWzA8qrMU-Odt6JPA/exec';  // URL Apps Script web aplikacije (za unos kroz aplikaciju)
+const PARTS_SHEET = 'Delovi';                // tab sa delovima
+const INFO_SHEET = 'Info';                   // tab: A1 = Last update, A3:B6 = PDF dokumentacija
 
 let allData = { parts: [], pdfs: { pdf1: { name: '', url: '' }, pdf2: { name: '', url: '' } } };
 let lastResults = [];
 let currentTab = 'search';
 let isAdminLoggedIn = false;
+let adminPw = '';   // lozinka se proverava u Apps Scriptu; ovde se samo drzi dok je admin prijavljen
+
+// ── GOOGLE SHEET ──────────────────────────────────────────────────────
+const gvizUrl = (sheet, extra = '') =>
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json${extra}&sheet=${encodeURIComponent(sheet)}`;
+
+// Normalizacija naziva: mala slova, bez dijakritika, bez visestrukih razmaka
+const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/\s+/g, ' ').trim();
+
+// Ucitavanje iz Google Sheeta sa ponovnim pokusajem (503 i slicne greske su privremene)
+async function fetchGviz(url, tries = 3) {
+  let lastErr;
+  for (let t = 0; t < tries; t++) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      const m = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
+      if (!m) throw new Error('Neočekivan odgovor — proveri da li je Sheet podešen na "Anyone with the link"');
+      const json = JSON.parse(m[1]);
+      if (json.status === 'error') {
+        const er = json.errors && json.errors[0];
+        throw new Error((er && (er.detailed_message || er.message)) || 'Google greška');
+      }
+      return json;
+    } catch (e) {
+      lastErr = e;
+      if (t < tries - 1) await new Promise(r => setTimeout(r, 800 * (t + 1)));
+    }
+  }
+  throw lastErr;
+}
+
+// Upis (dodavanje/brisanje) ide preko Apps Script web aplikacije
+async function callScript(payload) {
+  if (!SCRIPT_URL || SCRIPT_URL.startsWith('UBACI')) throw new Error('Apps Script URL nije podešen');
+  const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ ...payload, pw: adminPw }) });
+  let json;
+  try { json = await res.json(); } catch (e) { throw new Error('Neočekivan odgovor servera'); }
+  if (!json.ok) throw new Error(json.error || 'Greška pri čuvanju');
+  return json;
+}
 
 // ── DATA ──────────────────────────────────────────────────────────────
 async function loadData() {
   try {
-    const r = await fetch(API_BASE + '/latest', {
-      headers: { 'X-Master-Key': API_KEY }
-    });
-    const d = await r.json();
-    const record = d.record;
+    if (!SHEET_ID || SHEET_ID.startsWith('UBACI')) throw new Error('Sheet ID nije podešen');
+    const json = await fetchGviz(gvizUrl(PARTS_SHEET));
+    let rows = json.table.rows;
+    let labels = json.table.cols.map(c => c.label || '');
+    let firstRow = 2;   // broj reda u Sheetu u kome su prvi podaci (red 1 je zaglavlje)
 
-    // Support both array format (old) and object format (new)
-    if (Array.isArray(record)) {
-      allData.parts = record;
-      allData.pdfs = { pdf1: { name: '', url: '' }, pdf2: { name: '', url: '' } };
-    } else {
-      allData.parts = record.parts || [];
-      allData.pdfs = record.pdfs || { pdf1: { name: '', url: '' }, pdf2: { name: '', url: '' } };
+    const hasPart = arr => arr.some(l => { const k = norm(l); return k === 'part broj' || k.endsWith(' part broj'); });
+    if (!hasPart(labels)) {
+      // Google nije prepoznao zaglavlje: trazi ga u prvih 10 redova
+      for (let i = 0; i < Math.min(rows.length, 10); i++) {
+        const cand = (rows[i].c || []).map(x => (x && x.v != null) ? String(x.v) : '');
+        if (hasPart(cand)) { labels = cand; rows = rows.slice(i + 1); firstRow = i + 2; break; }
+      }
     }
+
+    const idx = {};
+    labels.forEach((l, i) => { const k = norm(l); if (k && !(k in idx)) idx[k] = i; });
+    const col = name => (norm(name) in idx) ? idx[norm(name)] : -1;
+    const C = { partNumber: col('Part broj'), description: col('Opis'), rNumber: col('R broj'), area: col('Area'), location: col('Lokacija'), image: col('Slika') };
+    if (C.partNumber < 0) throw new Error('Kolona "Part broj" nije pronađena. Zaglavlja koja Google vidi: ' + (labels.filter(Boolean).slice(0, 8).join(' | ') || '(nijedno)'));
+
+    allData.parts = rows.map((row, j) => {
+      const c = row.c || [];
+      const val = i => (i < 0 || !c[i] || c[i].v === null || c[i].v === undefined) ? '' : String(c[i].f ? c[i].f : c[i].v).trim();
+      return {
+        partNumber: val(C.partNumber),
+        description: val(C.description),
+        rNumber: val(C.rNumber),
+        area: val(C.area),
+        location: val(C.location),
+        image: val(C.image),
+        row: firstRow + j          // red u Sheetu (potreban za brisanje)
+      };
+    }).filter(p => p.partNumber);
 
     populateAreaDropdown();
     if (currentTab === 'all') showAllParts();
   } catch(e) {
     showError('Greška pri učitavanju podataka: ' + e.message);
   }
+  loadInfo();
 }
 
-async function saveData() {
-  const r = await fetch(API_BASE, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Master-Key': API_KEY
-    },
-    body: JSON.stringify(allData)
-  });
-  if (!r.ok) throw new Error('Greška pri čuvanju');
+// Last update (Info!A1) i PDF dokumentacija (Info!A3:B6)
+async function loadInfo() {
+  const el = document.getElementById('last-update');
+  try {
+    const json = await fetchGviz(gvizUrl(INFO_SHEET, '&headers=0&range=A1:B10'));
+    const rows = json.table.rows || [];
+    const cell = (r, i) => { const x = rows[r] && rows[r].c && rows[r].c[i]; return x ? String(x.f ? x.f : (x.v != null ? x.v : '')) : ''; };
+    el.textContent = cell(0, 0) || '—';
+    const byLabel = {};
+    rows.forEach((_, r) => { const k = norm(cell(r, 0)); if (k) byLabel[k] = cell(r, 1); });
+    allData.pdfs = {
+      pdf1: { name: byLabel['pdf 1 naziv'] || '', url: byLabel['pdf 1 link'] || '' },
+      pdf2: { name: byLabel['pdf 2 naziv'] || '', url: byLabel['pdf 2 link'] || '' }
+    };
+  } catch (e) {
+    console.warn('Info tab nije učitan (proveri tab "Info"):', e);
+    el.textContent = '—';
+  }
 }
 
 function populateAreaDropdown() {
@@ -1238,14 +1325,20 @@ function closeLogin() {
   document.getElementById('loginError').style.display = 'none';
 }
 
-function doLogin() {
+async function doLogin() {
   const pw = document.getElementById('loginPassword').value;
-  if (pw === ADMIN_PASSWORD) {
+  const err = document.getElementById('loginError');
+  err.style.display = 'none';
+  adminPw = pw;
+  try {
+    await callScript({ action: 'auth' });
     isAdminLoggedIn = true;
     closeLogin();
     openAdminPanel();
-  } else {
-    document.getElementById('loginError').style.display = 'block';
+  } catch (e) {
+    adminPw = '';
+    err.textContent = (e.message === 'Pogrešna lozinka') ? 'Pogrešna lozinka.' : ('Greška: ' + e.message);
+    err.style.display = 'block';
   }
 }
 
@@ -1302,9 +1395,10 @@ async function addPart() {
     image: document.getElementById('formImage').value.trim()
   };
 
-  allData.parts.push(part);
   try {
-    await saveData();
+    const res = await callScript({ action: 'add', part });
+    part.row = res.row;
+    allData.parts.push(part);
     ['formPartNumber','formDescription','formRNumber','formArea','formLocation','formImage'].forEach(id => document.getElementById(id).value = '');
     populateAreaDropdown();
     renderAdminList();
@@ -1316,7 +1410,6 @@ async function addPart() {
     btn.style.background = '#2e7d32';
     setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 2000);
   } catch(e) {
-    allData.parts.pop();
     // Show error inside modal without closing
     const btn = document.querySelector('.modal-footer .btn-save');
     const orig = btn.textContent;
@@ -1328,15 +1421,17 @@ async function addPart() {
 }
 
 async function deletePart(index) {
-  if (!confirm(`Obrisati deo "${allData.parts[index].partNumber}"?`)) return;
-  const removed = allData.parts.splice(index, 1);
+  const target = allData.parts[index];
+  if (!target) return;
+  if (!confirm(`Obrisati deo "${target.partNumber}"?`)) return;
   try {
-    await saveData();
+    await callScript({ action: 'delete', row: target.row, partNumber: target.partNumber });
+    allData.parts.splice(index, 1);
+    allData.parts.forEach(p => { if (p.row > target.row) p.row--; });   // redovi ispod su se pomerili
     populateAreaDropdown();
     renderAdminList();
     if (currentTab === 'all') showAllParts();
   } catch(e) {
-    allData.parts.splice(index, 0, removed[0]);
     showError('Greška pri brisanju: ' + e.message);
   }
 }
@@ -1347,7 +1442,7 @@ async function savePdfSettings() {
     pdf2: { name: document.getElementById('pdf2Name').value.trim(), url: document.getElementById('pdf2Url').value.trim() }
   };
   try {
-    await saveData();
+    await callScript({ action: 'pdfs', pdfs: allData.pdfs });
     alert('PDF linkovi sačuvani!');
   } catch(e) {
     showError('Greška: ' + e.message);
